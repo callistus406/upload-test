@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Application with Files Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"], input[type="email"], input[type="number"], input[type="date"], select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px dashed #ddd;
+            border-radius: 5px;
+            background-color: #fafafa;
+            cursor: pointer;
+        }
+        input[type="file"]:hover {
+            border-color: #007bff;
+            background-color: #f0f8ff;
+        }
+        .file-preview {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            display: none;
+        }
+        .file-preview img {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 5px;
+        }
+        .required {
+            color: red;
+        }
+        .section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .section h3 {
+            margin-top: 0;
+            color: #495057;
+            border-bottom: 2px solid #dee2e6;
+            padding-bottom: 10px;
+        }
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .three-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        .response {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        .response.success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .response.error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .response.loading {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        .config-section {
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .config-section input {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Loan Application with Files Test</h1>
+        
+        <!-- Configuration Section -->
+        <div class="config-section">
+            <h3>Configuration</h3>
+            <label for="apiUrl">API URL:</label>
+            <input type="text" id="apiUrl" value="http://localhost:5001/graphql" placeholder="GraphQL API URL">
+            
+            <label for="authToken">Authorization Token:</label>
+            <input type="text" id="authToken" placeholder="Bearer token" style="font-family: monospace;">
+        </div>
+
+        <!-- Personal Information Section -->
+        <div class="section">
+            <h3>Personal Information</h3>
+            <div class="two-column">
+                <div class="form-group">
+                    <label for="firstName">First Name <span class="required">*</span></label>
+                    <input type="text" id="firstName" value="John" required>
+                </div>
+                <div class="form-group">
+                    <label for="lastName">Last Name <span class="required">*</span></label>
+                    <input type="text" id="lastName" value="Doe" required>
+                </div>
+            </div>
+            <div class="two-column">
+                <div class="form-group">
+                    <label for="gender">Gender <span class="required">*</span></label>
+                    <select id="gender" required>
+                        <option value="MALE">Male</option>
+                        <option value="FEMALE">Female</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="dateOfBirth">Date of Birth <span class="required">*</span></label>
+                    <input type="date" id="dateOfBirth" value="1990-01-01" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="nationality">Nationality <span class="required">*</span></label>
+                <input type="text" id="nationality" value="Nigerian" required>
+            </div>
+            <div class="two-column">
+                <div class="form-group">
+                    <label for="bvn">BVN <span class="required">*</span></label>
+                    <input type="text" id="bvn" value="12345678901" pattern="[0-9]{11}" required>
+                </div>
+                <div class="form-group">
+                    <label for="relationshipStatus">Relationship Status <span class="required">*</span></label>
+                    <input type="text" id="relationshipStatus" value="SINGLE" required>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Information Section -->
+        <div class="section">
+            <h3>Contact Information</h3>
+            <div class="form-group">
+                <label for="homeAddress">Home Address <span class="required">*</span></label>
+                <input type="text" id="homeAddress" value="123 Main Street, Lagos" required>
+            </div>
+            <div class="form-group">
+                <label for="officeAddress">Office Address <span class="required">*</span></label>
+                <input type="text" id="officeAddress" value="456 Business Ave, Lagos" required>
+            </div>
+            <div class="two-column">
+                <div class="form-group">
+                    <label for="emailAddress">Email Address</label>
+                    <input type="email" id="emailAddress" value="john.doe@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="phoneNumber">Phone Number</label>
+                    <input type="text" id="phoneNumber" value="2348012345678" pattern="234[789][01][0-9]{8}">
+                </div>
+            </div>
+        </div>
+
+        <!-- Professional Information Section -->
+        <div class="section">
+            <h3>Professional Information</h3>
+            <div class="two-column">
+                <div class="form-group">
+                    <label for="companyName">Company Name</label>
+                    <input type="text" id="companyName" value="Tech Solutions Ltd">
+                </div>
+                <div class="form-group">
+                    <label for="companyAddress">Company Address</label>
+                    <input type="text" id="companyAddress" value="789 Corporate Blvd, Lagos">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="natureOfBusiness">Nature of Business</label>
+                <input type="text" id="natureOfBusiness" value="Technology Services">
+            </div>
+        </div>
+
+        <!-- Loan Details Section -->
+        <div class="section">
+            <h3>Loan Details</h3>
+            <div class="three-column">
+                <div class="form-group">
+                    <label for="amount">Loan Amount (₦) <span class="required">*</span></label>
+                    <input type="number" id="amount" value="500000" min="10000" required>
+                </div>
+                <div class="form-group">
+                    <label for="tenureInDays">Tenure (Days) <span class="required">*</span></label>
+                    <input type="number" id="tenureInDays" value="30" min="3" max="200" required>
+                </div>
+                <div class="form-group">
+                    <label for="loanType">Loan Type <span class="required">*</span></label>
+                    <input type="text" id="loanType" value="Business" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="loanPurpose">Loan Purpose <span class="required">*</span></label>
+                <textarea id="loanPurpose" rows="3" required>Business expansion and working capital</textarea>
+            </div>
+            <div class="form-group">
+                <label for="collateralName">Collateral Name <span class="required">*</span></label>
+                <input type="text" id="collateralName" value="Vehicle" required>
+            </div>
+            <div class="form-group">
+                <label for="isOwing">Currently Owing <span class="required">*</span></label>
+                <select id="isOwing" required>
+                    <option value="false">No</option>
+                    <option value="true">Yes</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Guarantor Information Section -->
+        <div class="section">
+            <h3>Guarantor Information</h3>
+            <div class="two-column">
+                <div class="form-group">
+                    <label for="guarantorName">Guarantor Name <span class="required">*</span></label>
+                    <input type="text" id="guarantorName" value="Jane Smith" required>
+                </div>
+                <div class="form-group">
+                    <label for="guarantorRelationship">Relationship <span class="required">*</span></label>
+                    <select id="guarantorRelationship" required>
+                        <option value="SINGLE">Spouse</option>
+                        <option value="SINGLE">Parent</option>
+                        <option value="SIBLING">Sibling</option>
+                        <option value="SINGLE">Friend</option>
+                        <option value="SINGLE">Colleague</option>
+                        <option value="SINGLE">Other</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="guarantorAddress">Guarantor Address <span class="required">*</span></label>
+                <input type="text" id="guarantorAddress" value="321 Guarantor Street, Lagos" required>
+            </div>
+            <div class="form-group">
+                <label for="guarantorOfficeAddress">Guarantor Office Address <span class="required">*</span></label>
+                <input type="text" id="guarantorOfficeAddress" value="654 Work Street, Lagos" required>
+            </div>
+            <div class="two-column">
+                <div class="form-group">
+                    <label for="guarantorPlaceOfWork">Place of Work <span class="required">*</span></label>
+                    <input type="text" id="guarantorPlaceOfWork" value="ABC Company" required>
+                </div>
+                <div class="form-group">
+                    <label for="positionHeld">Position Held <span class="required">*</span></label>
+                    <input type="text" id="positionHeld" value="Manager" required>
+                </div>
+            </div>
+            <div class="two-column">
+                <div class="form-group">
+                    <label for="guarantorEmail">Guarantor Email <span class="required">*</span></label>
+                    <input type="email" id="guarantorEmail" value="jane.smith@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="guarantorPhone">Guarantor Phone <span class="required">*</span></label>
+                    <input type="text" id="guarantorPhone" value="2348098765432" pattern="234[789][01][0-9]{8}" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="officeEmailAddress">Office Email Address <span class="required">*</span></label>
+                <input type="email" id="officeEmailAddress" value="jane.smith@abc.com" required>
+            </div>
+        </div>
+
+        <!-- Next of Kin Section -->
+        <div class="section">
+            <h3>Next of Kin Information</h3>
+            <div class="two-column">
+                <div class="form-group">
+                    <label for="nextOfKinName">Next of Kin Name <span class="required">*</span></label>
+                    <input type="text" id="nextOfKinName" value="Bob Johnson" required>
+                </div>
+                <div class="form-group">
+                    <label for="nextOfKinRelationship">Relationship <span class="required">*</span></label>
+                    <select id="nextOfKinRelationship" required>
+                        <option value="SPOUSE">Spouse</option>
+                        <option value="PARENT">Parent</option>
+                        <option value="SIBLING">Sibling</option>
+                        <option value="FRIEND">Friend</option>
+                        <option value="COLLEAGUE">Colleague</option>
+                        <option value="OTHER">Other</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="nextOfKinAddress">Next of Kin Address <span class="required">*</span></label>
+                <input type="text" id="nextOfKinAddress" value="987 Kin Street, Lagos" required>
+            </div>
+            <div class="two-column">
+                <div class="form-group">
+                    <label for="nextOfKinEmail">Next of Kin Email <span class="required">*</span></label>
+                    <input type="email" id="nextOfKinEmail" value="bob.johnson@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="nextOfKinPhone">Next of Kin Phone <span class="required">*</span></label>
+                    <input type="text" id="nextOfKinPhone" value="2348076543210" pattern="234[789][01][0-9]{8}" required>
+                </div>
+            </div>
+        </div>
+
+        <!-- File Upload Section -->
+        <div class="section">
+            <h3>Required Documents</h3>
+            <div class="form-group">
+                <label for="identityFile">Identity File (Passport/Driver's License) <span class="required">*</span></label>
+                <input type="file" id="identityFile" accept="image/*,.pdf" required>
+                <div id="identityFilePreview" class="file-preview"></div>
+            </div>
+            <div class="form-group">
+                <label for="bankStatement">Bank Statement <span class="required">*</span></label>
+                <input type="file" id="bankStatement" accept=".pdf,.doc,.docx,image/*" required>
+                <div id="bankStatementPreview" class="file-preview"></div>
+            </div>
+            <div class="form-group">
+                <label for="signature">Signature <span class="required">*</span></label>
+                <input type="file" id="signature" accept="image/*,.pdf" required>
+                <div id="signaturePreview" class="file-preview"></div>
+            </div>
+            <div class="form-group">
+                <label for="businessAuthLetter">Business Authorization Letter (Optional)</label>
+                <input type="file" id="businessAuthLetter" accept=".pdf,.doc,.docx,image/*">
+                <div id="businessAuthLetterPreview" class="file-preview"></div>
+            </div>
+            <div class="form-group">
+                <label for="collateral1">Collateral Document 1 (Optional)</label>
+                <input type="file" id="collateral1" accept="image/*,.pdf,.doc,.docx">
+                <div id="collateral1Preview" class="file-preview"></div>
+            </div>
+            <div class="form-group">
+                <label for="collateral2">Collateral Document 2 (Optional)</label>
+                <input type="file" id="collateral2" accept="image/*,.pdf,.doc,.docx">
+                <div id="collateral2Preview" class="file-preview"></div>
+            </div>
+        </div>
+
+        <button onclick="submitLoanApplication()" id="submitBtn">Submit Loan Application</button>
+        
+        <div id="response" class="response"></div>
+    </div>
+
+    <script>
+        // File preview functionality
+        function previewFile(inputId, previewId) {
+            const input = document.getElementById(inputId);
+            const preview = document.getElementById(previewId);
+            
+            input.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    preview.style.display = 'block';
+                    preview.innerHTML = `
+                        <strong>File:</strong> ${file.name}<br>
+                        <strong>Size:</strong> ${(file.size / 1024 / 1024).toFixed(2)} MB<br>
+                        <strong>Type:</strong> ${file.type}
+                    `;
+                    
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            preview.innerHTML += `<br><img src="${e.target.result}" alt="Preview">`;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                } else {
+                    preview.style.display = 'none';
+                }
+            });
+        }
+
+        // Initialize file previews
+        previewFile('identityFile', 'identityFilePreview');
+        previewFile('bankStatement', 'bankStatementPreview');
+        previewFile('signature', 'signaturePreview');
+        previewFile('businessAuthLetter', 'businessAuthLetterPreview');
+        previewFile('collateral1', 'collateral1Preview');
+        previewFile('collateral2', 'collateral2Preview');
+
+        function showResponse(message, type) {
+            const responseDiv = document.getElementById('response');
+            responseDiv.textContent = message;
+            responseDiv.className = `response ${type}`;
+            responseDiv.style.display = 'block';
+        }
+
+        async function submitLoanApplication() {
+            const submitBtn = document.getElementById('submitBtn');
+            const apiUrl = document.getElementById('apiUrl').value;
+            const authToken = document.getElementById('authToken').value;
+
+            if (!authToken) {
+                showResponse('Error: Authorization token is required', 'error');
+                return;
+            }
+
+            // Validate required files
+            const requiredFiles = ['identityFile', 'bankStatement', 'signature'];
+            const missingFiles = requiredFiles.filter(id => !document.getElementById(id).files[0]);
+            
+            if (missingFiles.length > 0) {
+                showResponse(`Error: Missing required files: ${missingFiles.join(', ')}`, 'error');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            showResponse('Processing loan application...', 'loading');
+
+            try {
+                const formData = new FormData();
+                
+                // Prepare the input object
+                const input = {
+                    firstName: document.getElementById('firstName').value,
+                    lastName: document.getElementById('lastName').value,
+                    homeAddress: document.getElementById('homeAddress').value,
+                    officeAddress: document.getElementById('officeAddress').value,
+                    companyName: document.getElementById('companyName').value || null,
+                    companyAddress: document.getElementById('companyAddress').value || null,
+                    natureOfBusiness: document.getElementById('natureOfBusiness').value || null,
+                    emailAddress: document.getElementById('emailAddress').value || null,
+                    phoneNumber: document.getElementById('phoneNumber').value || null,
+                    gender: document.getElementById('gender').value,
+                    amount: parseFloat(document.getElementById('amount').value),
+                    BVN: document.getElementById('bvn').value,
+                    relationshipStatus: document.getElementById('relationshipStatus').value,
+                    nationality: document.getElementById('nationality').value,
+                    dateOfBirth: document.getElementById('dateOfBirth').value,
+                    guarantorName: document.getElementById('guarantorName').value,
+                    guarantorAddress: document.getElementById('guarantorAddress').value,
+                    guarantorOfficeAddress: document.getElementById('guarantorOfficeAddress').value,
+                    guarantorPlaceOfWork: document.getElementById('guarantorPlaceOfWork').value,
+                    positionHeld: document.getElementById('positionHeld').value,
+                    officeEmailAddress: document.getElementById('officeEmailAddress').value,
+                    guarantorEmail: document.getElementById('guarantorEmail').value,
+                    guarantorPhone: document.getElementById('guarantorPhone').value,
+                    guarantorRelationship: document.getElementById('guarantorRelationship').value,
+                    nextOfKinName: document.getElementById('nextOfKinName').value,
+                    nextOfKinAddress: document.getElementById('nextOfKinAddress').value,
+                    nextOfKinEmail: document.getElementById('nextOfKinEmail').value,
+                    nextOfKinRelationship: document.getElementById('nextOfKinRelationship').value,
+                    nextOfKinPhone: document.getElementById('nextOfKinPhone').value,
+                    tenureInDays: parseInt(document.getElementById('tenureInDays').value),
+                    isOwing: document.getElementById('isOwing').value === 'true',
+                    loanPurpose: document.getElementById('loanPurpose').value,
+                    loanType: document.getElementById('loanType').value,
+                    collateralName: document.getElementById('collateralName').value
+                };
+
+                // Prepare GraphQL query
+                const query = `
+                    mutation LoanApplicationWithFiles($input: LoanApplicationWithFilesInput!) {
+                        loanApplicationWithFiles(input: $input) {
+                            statusCode
+                            message
+                            timestamp
+                        }
+                    }
+                `;
+
+                // Set up the operations and map for file upload
+                const operations = {
+                    query: query,
+                    variables: { input }
+                };
+
+                const map = {};
+                let fileIndex = 0;
+
+                // Add files to form data
+                const fileFields = [
+                    'identityFile', 'bankStatement', 'signature', 
+                    'businessAuthLetter', 'collateral1', 'collateral2'
+                ];
+
+                fileFields.forEach(fieldName => {
+                    const fileInput = document.getElementById(fieldName);
+                    if (fileInput.files[0]) {
+                        formData.append(fileIndex.toString(), fileInput.files[0]);
+                        map[fileIndex.toString()] = [`variables.input.${fieldName}`];
+                        fileIndex++;
+                    }
+                });
+
+                formData.append('operations', JSON.stringify(operations));
+                formData.append('map', JSON.stringify(map));
+
+                // Make the request
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': authToken
+                    },
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.errors) {
+                    showResponse('GraphQL Errors:\n' + JSON.stringify(result.errors, null, 2), 'error');
+                } else if (result.data?.loanApplicationWithFiles) {
+                    const response = result.data.loanApplicationWithFiles;
+                    showResponse(`Success! Status: ${response.statusCode}\nMessage: ${response.message}\nTimestamp: ${response.timestamp}`, 'success');
+                } else {
+                    showResponse('Unexpected response format:\n' + JSON.stringify(result, null, 2), 'error');
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                showResponse('Error: ' + error.message, 'error');
+            } finally {
+                submitBtn.disabled = false;
+            }
+        }
+
+        // Add some sample data for testing
+        function fillSampleData() {
+            // This function can be called to fill in sample data for testing
+            console.log('Sample data can be filled by calling this function');
+        }
+    </script>
+</body>
+</html> 
