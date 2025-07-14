@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Credit Limit Increase Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"], input[type="email"], input[type="number"], select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px dashed #ddd;
+            border-radius: 5px;
+            background-color: #fafafa;
+            cursor: pointer;
+        }
+        input[type="file"]:hover {
+            border-color: #007bff;
+            background-color: #f0f8ff;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .response {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .loading {
+            text-align: center;
+            color: #666;
+        }
+        .file-info {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            font-size: 12px;
+            color: #666;
+        }
+        .required {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Credit Limit Increase Test</h1>
+        <p style="text-align: center; color: #666; margin-bottom: 30px;">
+            Test the new <code>applyForCreditLimitIncreaseWithFiles</code> endpoint
+        </p>
+
+        <!-- Authentication Section -->
+        <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px; border-left: 4px solid #007bff;">
+            <h3 style="margin-top: 0; color: #007bff;">🔐 Authentication</h3>
+            <div class="form-group">
+                <label for="authToken">Authorization Token <span class="required">*</span></label>
+                <input type="text" id="authToken" name="authToken" required placeholder="Bearer YOUR_TOKEN_HERE" style="font-family: monospace;">
+                <small style="color: #666;">Enter your JWT token (e.g., Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...)</small>
+            </div>
+            <div class="form-group">
+                <label for="apiUrl">API Endpoint URL</label>
+                <input type="url" id="apiUrl" name="apiUrl" value="http://localhost:5001/graphql" placeholder="http://localhost:5001/graphql">
+                <small style="color: #666;">Your GraphQL endpoint URL</small>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <button type="button" id="testAuthBtn" style="background-color: #28a745; width: auto; margin: 0;">Test Connection</button>
+                <button type="button" id="clearAuthBtn" style="background-color: #6c757d; width: auto; margin: 0;">Clear Token</button>
+            </div>
+        </div>
+
+        <form id="creditLimitForm" onsubmit="return false;">
+            <div class="form-group">
+                <label for="annualGrossIncome">Annual Gross Income <span class="required">*</span></label>
+                <input type="number" id="annualGrossIncome" name="annualGrossIncome" required min="50000" step="1000" placeholder="e.g., 500000">
+                <small style="color: #666;">Minimum: ₦50,000</small>
+            </div>
+
+            <div class="form-group">
+                <label for="otherIncome">Other Income (Optional)</label>
+                <input type="number" id="otherIncome" name="otherIncome" step="1000" placeholder="e.g., 100000">
+            </div>
+
+            <div class="form-group">
+                <label for="employmentStatus">Employment Status <span class="required">*</span></label>
+                <select id="employmentStatus" name="employmentStatus" required>
+                    <option value="">Select employment status</option>
+                    <option value="EMPLOYED">Employed</option>
+                    <option value="SELF_EMPLOYED">Self Employed</option>
+                    <option value="BUSINESS_OWNER">Business Owner</option>
+                    <option value="FREELANCER">Freelancer</option>
+                    <option value="STUDENT">Student</option>
+                    <option value="UNEMPLOYED">Unemployed</option>
+                    <option value="RETIRED">Retired</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="currentDebt">Current Debt <span class="required">*</span></label>
+                <input type="number" id="currentDebt" name="currentDebt" required min="0" step="1000" placeholder="e.g., 50000">
+            </div>
+
+            <div class="form-group">
+                <label for="desiredCreditLimit">Desired Credit Limit <span class="required">*</span></label>
+                <input type="number" id="desiredCreditLimit" name="desiredCreditLimit" required min="1000" step="1000" placeholder="e.g., 200000">
+            </div>
+
+            <div class="form-group">
+                <label for="guarantorName">Guarantor Name <span class="required">*</span></label>
+                <input type="text" id="guarantorName" name="guarantorName" required placeholder="e.g., John Doe">
+            </div>
+
+            <div class="form-group">
+                <label for="guarantorEmail">Guarantor Email <span class="required">*</span></label>
+                <input type="email" id="guarantorEmail" name="guarantorEmail" required placeholder="e.g., john.doe@example.com">
+            </div>
+
+            <div class="form-group">
+                <label for="reason">Reason for Increase <span class="required">*</span></label>
+                <textarea id="reason" name="reason" required rows="3" placeholder="Please explain why you need a credit limit increase..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="proofOfIncome">Proof of Income <span class="required">*</span></label>
+                <input type="file" id="proofOfIncome" name="proofOfIncome" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" required>
+                <div class="file-info" id="fileInfo" style="display: none;">
+                    <strong>Selected file:</strong> <span id="fileName"></span><br>
+                    <strong>Size:</strong> <span id="fileSize"></span><br>
+                    <strong>Type:</strong> <span id="fileType"></span>
+                </div>
+                <small style="color: #666;">Accepted formats: PDF, JPG, JPEG, PNG, DOC, DOCX</small>
+            </div>
+
+            <button type="button" id="submitBtn" onclick="submitCreditLimitIncrease()">Submit Credit Limit Increase Request</button>
+        </form>
+
+        <div id="response" class="response"></div>
+    </div>
+
+    <script>
+        // File input handling
+        document.getElementById('proofOfIncome').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const fileInfo = document.getElementById('fileInfo');
+            const fileName = document.getElementById('fileName');
+            const fileSize = document.getElementById('fileSize');
+            const fileType = document.getElementById('fileType');
+
+            if (file) {
+                fileName.textContent = file.name;
+                fileSize.textContent = formatFileSize(file.size);
+                fileType.textContent = file.type;
+                fileInfo.style.display = 'block';
+            } else {
+                fileInfo.style.display = 'none';
+            }
+        });
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Authentication buttons
+        document.getElementById('testAuthBtn').addEventListener('click', async function() {
+            const token = document.getElementById('authToken').value;
+            const apiUrl = document.getElementById('apiUrl').value;
+            const responseDiv = document.getElementById('response');
+            
+            if (!token) {
+                responseDiv.className = 'response error';
+                responseDiv.innerHTML = '<h3>❌ Error!</h3><p>Please enter an authorization token first.</p>';
+                responseDiv.style.display = 'block';
+                return;
+            }
+
+            try {
+                // Test query to verify authentication
+                const testQuery = `
+                    query TestAuth {
+                        getCreditAccount {
+                            statusCode
+                            message
+                            data {
+                                accountNumber
+                                creditLimit
+                                balance
+                            }
+                        }
+                    }
+                `;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': token
+                    },
+                    body: JSON.stringify({
+                        query: testQuery
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.errors) {
+                    throw new Error(result.errors[0].message);
+                }
+
+                responseDiv.className = 'response success';
+                responseDiv.innerHTML = `
+                    <h3>✅ Authentication Successful!</h3>
+                    <p>Successfully connected to the API.</p>
+                    <p><strong>Status Code:</strong> ${result.data?.getCreditAccount?.statusCode || 'N/A'}</p>
+                    <p><strong>Message:</strong> ${result.data?.getCreditAccount?.message || 'N/A'}</p>
+                    <details>
+                        <summary>Response Details</summary>
+                        <pre>${JSON.stringify(result, null, 2)}</pre>
+                    </details>
+                `;
+                responseDiv.style.display = 'block';
+
+            } catch (error) {
+                responseDiv.className = 'response error';
+                responseDiv.innerHTML = `
+                    <h3>❌ Authentication Failed!</h3>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                    <p>Please check your token and API URL.</p>
+                `;
+                responseDiv.style.display = 'block';
+            }
+        });
+
+        document.getElementById('clearAuthBtn').addEventListener('click', function() {
+            document.getElementById('authToken').value = '';
+            document.getElementById('apiUrl').value = 'http://localhost:5001/graphql';
+            document.getElementById('response').style.display = 'none';
+        });
+
+        // Form submission function
+        async function submitCreditLimitIncrease() {
+            const submitBtn = document.getElementById('submitBtn');
+            const responseDiv = document.getElementById('response');
+            
+            // Disable button and show loading
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+            responseDiv.style.display = 'none';
+
+            try {
+                // Get authentication details
+                const token = document.getElementById('authToken').value;
+                const apiUrl = document.getElementById('apiUrl').value;
+                
+                if (!token) {
+                    throw new Error('Authorization token is required. Please enter your token first.');
+                }
+
+                // Get form data
+                const formData = new FormData();
+                
+                // Add file
+                const fileInput = document.getElementById('proofOfIncome');
+                if (fileInput.files[0]) {
+                    formData.append('0', fileInput.files[0]);
+                }
+
+                // Add form fields
+                const formFields = {
+                    annualGrossIncome: parseFloat(document.getElementById('annualGrossIncome').value),
+                    otherIncome: document.getElementById('otherIncome').value ? parseFloat(document.getElementById('otherIncome').value) : null,
+                    employmentStatus: document.getElementById('employmentStatus').value,
+                    currentDebt: parseFloat(document.getElementById('currentDebt').value),
+                    desiredCreditLimit: parseFloat(document.getElementById('desiredCreditLimit').value),
+                    guarantorName: document.getElementById('guarantorName').value,
+                    guarantorEmail: document.getElementById('guarantorEmail').value,
+                    reason: document.getElementById('reason').value
+                };
+
+                // Create GraphQL query
+                const query = `
+                    mutation ApplyForCreditLimitIncreaseWithFiles($input: RequestCreditLimitWithFilesInput!) {
+                        applyForCreditLimitIncreaseWithFiles(input: $input) {
+                            statusCode
+                            message
+                            timestamp
+                        }
+                    }
+                `;
+
+                // Prepare the request
+                const variables = {
+                    input: formFields
+                };
+
+                // Add GraphQL query and variables to form data
+                formData.append('operations', JSON.stringify({
+                    query: query,
+                    variables: variables
+                }));
+
+                // Add file mapping
+                formData.append('map', JSON.stringify({
+                    '0': ['variables.input.proofOfIncome']
+                }));
+
+                console.log('Sending request to:', apiUrl);
+                console.log('Form Data:', formFields);
+                console.log('File:', fileInput.files[0]);
+                console.log('GraphQL Query:', query);
+                console.log('Variables:', variables);
+
+                // Send real API request
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': token
+                        // Don't set Content-Type for multipart/form-data - browser will set it automatically
+                    },
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
+                }
+
+                const result = await response.json();
+
+                if (result.errors) {
+                    throw new Error(result.errors[0].message);
+                }
+
+                const apiResponse = result.data?.applyForCreditLimitIncreaseWithFiles;
+
+                // Show success response
+                responseDiv.className = 'response success';
+                responseDiv.innerHTML = `
+                    <h3>✅ Success!</h3>
+                    <p><strong>Status Code:</strong> ${apiResponse?.statusCode || 'N/A'}</p>
+                    <p><strong>Message:</strong> ${apiResponse?.message || 'N/A'}</p>
+                    <p><strong>Timestamp:</strong> ${apiResponse?.timestamp ? new Date(apiResponse.timestamp).toLocaleString() : 'N/A'}</p>
+                    <hr>
+                    <h4>Request Details:</h4>
+                    <pre>${JSON.stringify(formFields, null, 2)}</pre>
+                    <h4>File Details:</h4>
+                    <p><strong>Name:</strong> ${fileInput.files[0]?.name || 'No file'}</p>
+                    <p><strong>Size:</strong> ${fileInput.files[0] ? formatFileSize(fileInput.files[0].size) : 'No file'}</p>
+                    <p><strong>Type:</strong> ${fileInput.files[0]?.type || 'No file'}</p>
+                    <details>
+                        <summary>Full API Response</summary>
+                        <pre>${JSON.stringify(result, null, 2)}</pre>
+                    </details>
+                `;
+                responseDiv.style.display = 'block';
+
+                // Don't reset form fields - keep all values
+                console.log('Form submitted successfully - fields preserved');
+
+            } catch (error) {
+                // Show error response
+                responseDiv.className = 'response error';
+                responseDiv.innerHTML = `
+                    <h3>❌ Error!</h3>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                    <p>Please check your input and try again.</p>
+                `;
+                responseDiv.style.display = 'block';
+            } finally {
+                // Re-enable button
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Credit Limit Increase Request';
+            }
+        }
+    </script>
+</body>
+</html> 
